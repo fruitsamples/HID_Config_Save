@@ -1,5 +1,5 @@
-//     File: HID_Error_Handler.c
-// Abstract: Implementation of the HID utilities error handlers
+//     File: HID_Config_Save_Prefix.pch
+// Abstract: Prefix header for all source files of the 'HID_Config_Save' target in the 'HID_Config_Save' project
 //  Version: 5.0
 // 
 // Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
@@ -42,60 +42,13 @@
 // 
 // Copyright (C) 2010 Apple Inc. All Rights Reserved.
 // 
-// *****************************************************
-#ifdef DEBUG // not used in release
-#if !defined(kBuildingLibrary)
-#define kVerboseErrors
-
-// system includes ----------------------------------------------------------
-
-#ifdef kVerboseErrors
-// #include <Carbon/Carbon.h>
-#endif // ifdef kVerboseErrors
-#endif  // not kBuildingLibrary
-#endif  // DEBUG
-
-#include <stdio.h>
-
-// project includes ---------------------------------------------------------
-
-#include "HID_Utilities_External.h"
-
-// globals (internal/private) -----------------------------------------------
-
-// prototypes (internal/private) --------------------------------------------
-
-// functions (internal/private) ---------------------------------------------
-
-#pragma mark -
-// -------------------------------------
-
-// central error reporting
-
-void HIDReportErrorNum(const char * strError, int numError) {
-	char errMsgCStr[256];
-	
-	sprintf(errMsgCStr, "%s #%d (0x%x)", strError, numError, numError);
-	
-	// out as debug string
-#ifdef kVerboseErrors
-	{
-		fprintf(stderr, "%s", errMsgCStr);
-	}
-#endif // kVerboseErrors
-} // HIDReportErrorNum
-
-// -------------------------------------
-
-void HIDReportError(const char * strError) {
-	char errMsgCStr[256];
-	
-	sprintf(errMsgCStr, "%s", strError);
-	
-	// out as debug string
-#ifdef kVerboseErrors
-	{
-		fprintf(stderr, "%s", errMsgCStr);
-	}
-#endif // kVerboseErrors
-} // HIDReportError
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+#ifdef DEBUG
+#define NSLogDebug(format, ...) \
+NSLog(@"<%s:%d> %s, " format, \
+strrchr("/" __FILE__, '/') + 1, __LINE__, __PRETTY_FUNCTION__, ## __VA_ARGS__)
+#else // ifdef DEBUG
+#define NSLogDebug(format, ...)
+#endif // ifdef DEBUG

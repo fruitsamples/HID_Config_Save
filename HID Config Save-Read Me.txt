@@ -8,7 +8,7 @@ command shows using the configured inputs in a simple game like environment.  No
 
 ----
 
-Requirements: Mac OS X 10.5, Xcode 2.4
+Requirements: Mac OS X 10.5, Xcode 3.2
 
 Packing List
 ------------
@@ -16,68 +16,52 @@ The sample contains the following items:
 
 	HID Config Save-Read Me.txt		- this file
 	HID Config Save.xcodeproj		- Xcode project file
-	configs 						- Xcode configuration files
-	HID Config Save_Prefix.pch		- prefix header file
-	main.c							- main source file
-	HID Config Save-Info.plist		- source for info.plist
+	HID_Config_Save_Prefix.pch		- prefix header file
+	main.m							- main source file
+	HID_Config_SaveAppDelegate.m	- implementation of application delegate class
+	HID_Config_SaveAppDelegate.h	- header for application delegate class
+	HID_Config_Save-Info.plist		- source for info.plist
+	PlayView.m						- implementation of play view class
+	PlayView.h						- header for play view class
 	English.lproj					- English localization files
-		⁃	main.nib				- the main nib
-		⁃	InfoPlist.strings		- strings file
+		-	MainMenu.xib			- the main nib
+		-	InfoPlist.strings		- strings file
 	HID Utilities					- folder of sources for HID utility files
-		⁃	IOHIDLib_.h				- single include header for HID utility files
-		⁃	HID_Utilities.c			- HID utility source
-		⁃	HID_Utilities.h			- HID utility header
-		⁃	IOHIDDevice_.c			- HID Device utilities source
-		⁃	IOHIDDevice_.h			- HID Device utilities header
-		⁃	IOHIDElement_.c			- HID Element utilities source
-		⁃	IOHIDElement_.h			- HID Element utilities source
+		-	HID_Config_Utilities.c	- HID configuration utilitys source
+		-	HID_Error_Handler.c		- HID error utilitys source
+		-	HID_Name_Lookup.c		- HID device/element name lookup source
+		-	HID_Queue_Utilities.c	- HID queue utilitys source
+		-	HID_Utilities.c			- HID utilitys source
+		-	HID_Utilities_External.h	- HID utilitys headers
+		-	IOHIDManager			- folder of sources for IOHID Manager support files
+			-	ImmrHIDUtilAddOn.c	- Immersion (Force Feedback) add on source
+			-	ImmrHIDUtilAddOn.h	- Immersion (Force Feedback) add on header
+			-	IOHIDDevice_.c		- IOHIDDevice source
+			-	IOHIDDevice_.h		- IOHIDDevice header
+			-	IOHIDElement_.c		- IOHIDElement source
+			-	IOHIDElement_.h		- IOHIDElement header
+			⁃	IOHIDLib_.h			- single include header for HID utility files
 		⁃	English.lproj			- HID utilities localization files
-			⁃	HID_usage_strings.plist	- HID usage strings (XML) file
+			-	HID_cookie_strings.plist		- HID cookie usage strings
+			-	HID_device_usage_strings.plist	- HID device usage strings
+			-	HID_usage_strings.plist			- HID usage strings
 	build							- contains a prebuilt binary.
+	Application.icns				- Application icon file
 
 Building the Sample
 -------------------
-The sample was built using Xcode 3.0 on Mac OS X 10.5.  You should be able to just open the project and choose Build from the Build menu.  This will build "HID Calibrator.app" in the "build/debug" or "build/release" directory.
+The sample was built using Xcode 3.2 on Mac OS X 10.6.  You should be able to just open the project and choose Build from the Build menu.  This will build "HID Config Save.app" in the "build/debug" or "build/release" directory.
 
 Using the Sample
 ----------------
 Launch "HID Config Save"
-In the "File" menu select the "Configure Input" (command-K) item; a "Config Window" should appear.
-Press the "X Axis" button and then press or move a USB HID devices element (key, button, axis, etc).
+Press the "X Axis" button and then press or move a USB HID devices element (key, button, axis, etc) to assign that element to that action.
 Repeat the previous step for the "Y Axis", "Thrust", and "Fire" buttons.
-Press the "Ok" button to close the window.
-In the "File" menu select the "Save Configuration" (command-S) item.
+Click the "Save" button.
 Quit and re-launch the "HID Config" application.
-In the "File" menu select the "Configure Input" (command-K) item; a "Config Window" should appear. Note: the buttons should be assigned to the saved configuration.
-In the "File" menu select the "Go" (command-G) item; A "Game" window should appear; moving the HID element associated with the X or Y axis should move the red dot in the center of the square. Interacting with the "Fire" and "Thrust" elements should update their associated controls.
-
-How the code works
-------------
-In the "main" routine if all the initialization code executes successfully then the Initialize_HID routine is called. This routine creates a IOHID Manager reference which is then used to install device matching (Handle_DeviceMatchingCallback) and removal (Handle_DeviceRemovalCallback) callbacks and schedule the manager with the runloop. It then calls HIDBuildMultiDeviceList (a routine in the HID Utilities sources) to open the IOHID Manager reference. 
-
-When the "File" menu's "Configure Input" (command-K) item is selected the application event handler routine (Handle_AppEvents) is call with a kEventCommandProcess message whose commandID is kHICommandConfig. If the configure window (gConfigWindowRef) doesn't yet exists this routine will create it (mapping any current configuration information to the appropriate buttons at this time (via the Set_DeviceControlNames routine)) and installing a window event handler (Handle_ConfigurationWindowEvents). That routine will be called for all interactions with this windows controls.
-
-For the "X Axis", "Y Axis", "Thrust", and "Fire" buttons the HIDConfigureAction routine will be called which waits up to ten seconds for a HID element to be interacted with; if that happens before the timeout period then that HID device & element is mapped to that action. The "Ok" button dismisses the window.
-
-When the "File" menus "Save Configuration" (command-S) item is selected the application event handler routine (Handle_AppEvents) is call with a kEventCommandProcess message whose commandID is kHICommandSave which will call the Save_Config routine.
-
-The Save_Config routine iterates over the gActionArray saving each element via the HIDSaveElementPref routine.
-
-When the "File" menus "Restore Configuration" (command-R) item is selected the application event handler routine (Handle_AppEvents) is call with a kEventCommandProcess message whose commandID is kHICommandRestore which will call the Restore_Configs routine.
-
-The Restore_Configs routine iterates over the gActionArray restoring each element via the HIDRestoreElementPref routine.
-
-When the "File" menus "Go" (command-G) item is selected the application event handler routine (Handle_AppEvents) is call with a kEventCommandProcess message whose commandID is kHICommandGoGo. If no game window exists it will be created and an event handler (Handle_GameWindowEvents) installed. A event handler (Handle_HIViewEvents) will also be installed for the custom user pane in this window. If the USE_QUEUES macro is defined then HID queues are created and value available callbacks (Handle_ValueAvailableCallback) are installed. If the USE_QUEUES macro is not defined but the USE_VALUE_CALLBACK macro is then a device input value callback (Handle_InputValueCallback) is installed. If neather of these macro are defined then a Carbon event loop timer callback (Handle_TimerEvents) is installed.
-
-The Handle_GameWindowEvents routine is called when the user presses the "Ok" button. When this happens the event loop timer is removed and the IOHID device actions are unscheduled from the run loop and input value callbacks are un-registered. Then the game window is dismissed.
-
-The Handle_HIViewEvents routine is called to draw the user pane in the game window (which consist of the square border and a red dot that corresponds to the values of the X and Y axis).
-
-The Handle_ValueAvailableCallback routine will be called when there is a queue value available. It will loop calling IOHIDQueueCopyNextValue until there are no more values available. When there is a value available it will iterate over the gActionArray looking for elements that match the HID value's element; if found the new value will be stored in the array.
-
-The Handle_InputValueCallback routine will be called when any HID element value changes for any HID device. It will iterate over the gActionArray looking for elements that match the HID value's element; if found the new value will be stored in the array
-
-The Restore_Configs routine iterates over the gActionArray restoring each element via the HIDRestoreElementPref routine.
+A window should appear. Note: the buttons should be assigned to the saved configuration.
+Click on the "Play" tab.
+A black view should appear; moving the HID element associated with the X or Y axis should move the dot and crosshairs in the center of the view. Interacting with the "Fire" element should change the crosshairs into (red) laser traces (from the corner of the view). Interacting with the "Thrust" element should change the dots color from yellow to green.
 
 Caveats
 -------
@@ -88,6 +72,11 @@ We hope this helps people get up and running with the HID Manager APIs introduce
 
 Credits and Version History
 ---------------------------
+
+Version 5.0	27 July 2010
+		Cocoa rewrite! 
+		Element calibration properties now doubles.
+		Device / Element info printf's now use HIDDump[Device/Element]Info.
 
 Version 4.0	18 Oct 2007
 		Update for new Leopard API's and Universal Binary. 

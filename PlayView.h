@@ -1,5 +1,5 @@
-//     File: HID_Error_Handler.c
-// Abstract: Implementation of the HID utilities error handlers
+//     File: PlayView.h
+// Abstract: Header file for PlayView class of HID_Config_Save project
 //  Version: 5.0
 // 
 // Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple
@@ -42,60 +42,20 @@
 // 
 // Copyright (C) 2010 Apple Inc. All Rights Reserved.
 // 
-// *****************************************************
-#ifdef DEBUG // not used in release
-#if !defined(kBuildingLibrary)
-#define kVerboseErrors
+#import <Cocoa/Cocoa.h>
 
-// system includes ----------------------------------------------------------
+@interface PlayView : NSView {
+	double x, y, minX, minY, maxX, maxY;
+	BOOL thrust, fire;
+}
 
-#ifdef kVerboseErrors
-// #include <Carbon/Carbon.h>
-#endif // ifdef kVerboseErrors
-#endif  // not kBuildingLibrary
-#endif  // DEBUG
+@property (assign) double x;
+@property (assign) double y;
+@property (assign) double minX;
+@property (assign) double minY;
+@property (assign) double maxX;
+@property (assign) double maxY;
 
-#include <stdio.h>
-
-// project includes ---------------------------------------------------------
-
-#include "HID_Utilities_External.h"
-
-// globals (internal/private) -----------------------------------------------
-
-// prototypes (internal/private) --------------------------------------------
-
-// functions (internal/private) ---------------------------------------------
-
-#pragma mark -
-// -------------------------------------
-
-// central error reporting
-
-void HIDReportErrorNum(const char * strError, int numError) {
-	char errMsgCStr[256];
-	
-	sprintf(errMsgCStr, "%s #%d (0x%x)", strError, numError, numError);
-	
-	// out as debug string
-#ifdef kVerboseErrors
-	{
-		fprintf(stderr, "%s", errMsgCStr);
-	}
-#endif // kVerboseErrors
-} // HIDReportErrorNum
-
-// -------------------------------------
-
-void HIDReportError(const char * strError) {
-	char errMsgCStr[256];
-	
-	sprintf(errMsgCStr, "%s", strError);
-	
-	// out as debug string
-#ifdef kVerboseErrors
-	{
-		fprintf(stderr, "%s", errMsgCStr);
-	}
-#endif // kVerboseErrors
-} // HIDReportError
+@property (assign) BOOL thrust;
+@property (assign) BOOL fire;
+@end
